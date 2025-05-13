@@ -1,20 +1,20 @@
 const supabaseUrl = 'https://mjhxbayrxovgvudosbit.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qaHhiYXlyeG92Z3Z1ZG9zYml0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcxMzIyNTAsImV4cCI6MjA2MjcwODI1MH0.inSySxoP7402gYbLnzOFokOhXLVKq19P-ofrB3OLnKg';
 const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-// Word list with translations
+// Word list with translations and emoji
 const words = [
-    { english: 'each', hebrew: 'כל (אחד)', image: 'https://picsum.photos/200/200?random=1' },
-    { english: 'everyone', hebrew: 'כולם', image: 'https://picsum.photos/200/200?random=2' },
-    { english: 'fall', hebrew: 'ליפול', image: 'https://picsum.photos/200/200?random=3' },
-    { english: 'flag', hebrew: 'דגל', image: 'https://picsum.photos/200/200?random=4' },
-    { english: 'guess', hebrew: 'לנחש', image: 'https://picsum.photos/200/200?random=5' },
-    { english: 'kind of', hebrew: 'סוג של', image: 'https://picsum.photos/200/200?random=6' },
-    { english: 'many', hebrew: 'הרבה', image: 'https://picsum.photos/200/200?random=7' },
-    { english: 'outside', hebrew: 'בחוץ', image: 'https://picsum.photos/200/200?random=8' },
-    { english: 'parents', hebrew: 'הורים', image: 'https://picsum.photos/200/200?random=9' },
-    { english: 'pull', hebrew: 'למשוך', image: 'https://picsum.photos/200/200?random=10' },
-    { english: 'spook', hebrew: 'כדי להפחיד', image: 'https://picsum.photos/200/200?random=11' },
-    { english: 'weekend', hebrew: 'סוף שבוע', image: 'https://picsum.photos/200/200?random=12' }
+    { english: 'each', hebrew: 'כל (אחד)', emoji: '👤' },
+    { english: 'everyone', hebrew: 'כולם', emoji: '👥' },
+    { english: 'fall', hebrew: 'ליפול', emoji: '🍂' },
+    { english: 'flag', hebrew: 'דגל', emoji: '🚩' },
+    { english: 'guess', hebrew: 'לנחש', emoji: '❓' },
+    { english: 'kind of', hebrew: 'סוג של', emoji: '🌀' },
+    { english: 'many', hebrew: 'הרבה', emoji: '🔢' },
+    { english: 'outside', hebrew: 'בחוץ', emoji: '🌳' },
+    { english: 'parents', hebrew: 'הורים', emoji: '👨‍👩‍👧‍👦' },
+    { english: 'pull', hebrew: 'למשוך', emoji: '🤏' },
+    { english: 'spook', hebrew: 'כדי להפחיד', emoji: '👻' },
+    { english: 'weekend', hebrew: 'סוף שבוע', emoji: '🎉' }
 ];
 
 // Current user
@@ -52,6 +52,11 @@ document.addEventListener('DOMContentLoaded', () => {
     displayWordCards();
     setupVocabBtn();
     restoreUser();
+
+    const imagePracticeBtn = document.getElementById('imagePracticeBtn');
+    if (imagePracticeBtn) {
+        imagePracticeBtn.addEventListener('click', startImagePracticeGame);
+    }
 });
 
 // Display word cards
@@ -64,7 +69,7 @@ function displayWordCards() {
         const card = document.createElement('div');
         card.className = 'word-card';
         card.innerHTML = `
-            <img src="${word.image}" alt="${word.english}">
+            <span class="word-emoji">${word.emoji}</span>
             <div class="english">${word.english}</div>
             <div class="hebrew">${word.hebrew}</div>
         `;
@@ -230,6 +235,15 @@ function insertChildInfoBar(container) {
     container.prepend(infoBar);
 }
 
+// Insert back-to-home button at the top of a container
+function insertBackHomeBtn(container) {
+    const btn = document.createElement('button');
+    btn.className = 'back-home-btn-game';
+    btn.innerHTML = '🔙 חזרה לדף הבית';
+    btn.onclick = () => window.location.href = 'index.html';
+    container.prepend(btn);
+}
+
 // Helper to make game title clickable
 function makeGameTitleHomeClickable() {
     const h2 = document.querySelector('.game-container h2');
@@ -256,6 +270,7 @@ function startMemoryGame() {
             <div class="memory-cards"></div>
         </div>
     `;
+    insertBackHomeBtn(gameContainer);
     insertChildInfoBar(gameContainer);
     makeGameTitleHomeClickable();
 
@@ -274,7 +289,7 @@ function startMemoryGame() {
             <div class="memory-card-inner">
                 <div class="memory-card-front">?</div>
                 <div class="memory-card-back">
-                    <img src="${word.image}" alt="${word.english}">
+                    <span class="word-emoji">${word.emoji}</span>
                     <div class="memory-word">${word.english}</div>
                     <div class="memory-translation">${word.hebrew}</div>
                 </div>
@@ -417,6 +432,10 @@ function startMemoryGame() {
 function startMatchingGame() {
     // Clear the game container
     const gameContainer = document.querySelector('.game-container');
+    // Randomly decide direction: true = English to Hebrew, false = Hebrew to English
+    const engToHeb = Math.random() < 0.5;
+    const leftLabel = engToHeb ? 'אנגלית' : 'עברית';
+    const rightLabel = engToHeb ? 'עברית' : 'אנגלית';
     gameContainer.innerHTML = `
         <div class="matching-game">
             <div class="matching-header">
@@ -426,9 +445,13 @@ function startMatchingGame() {
                     <span>ניקוד: <span id="score">0</span></span>
                 </div>
             </div>
+            <div class="matching-labels" style="display:flex;justify-content:center;gap:40px;margin-bottom:10px;">
+                <span style="font-weight:bold;">${leftLabel}</span>
+                <span style="font-weight:bold;">${rightLabel}</span>
+            </div>
             <div class="matching-container">
-                <div class="english-words"></div>
-                <div class="hebrew-words"></div>
+                <div class="left-words"></div>
+                <div class="right-words"></div>
             </div>
             <div class="matching-controls">
                 <button id="startGame">התחל משחק</button>
@@ -436,6 +459,7 @@ function startMatchingGame() {
             </div>
         </div>
     `;
+    insertBackHomeBtn(gameContainer);
     insertChildInfoBar(gameContainer);
     makeGameTitleHomeClickable();
 
@@ -462,7 +486,7 @@ function startMatchingGame() {
             justify-content: center;
             margin: 20px 0;
         }
-        .english-words, .hebrew-words {
+        .left-words, .right-words {
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -511,8 +535,8 @@ function startMatchingGame() {
     document.head.appendChild(style);
 
     // Game state
-    let selectedEnglish = null;
-    let selectedHebrew = null;
+    let selectedLeft = null;
+    let selectedRight = null;
     let score = 0;
     let timeLeft = 60;
     let timer = null;
@@ -520,83 +544,69 @@ function startMatchingGame() {
 
     // Get random words for the game
     const gameWords = [...words].sort(() => Math.random() - 0.5).slice(0, 6);
-    
     // Create word cards
-    const englishContainer = document.querySelector('.english-words');
-    const hebrewContainer = document.querySelector('.hebrew-words');
-
+    const leftContainer = document.querySelector('.left-words');
+    const rightContainer = document.querySelector('.right-words');
     gameWords.forEach(word => {
-        // English card
-        const englishCard = document.createElement('div');
-        englishCard.className = 'word-card';
-        englishCard.dataset.word = word.english;
-        englishCard.textContent = word.english;
-        englishContainer.appendChild(englishCard);
-
-        // Hebrew card
-        const hebrewCard = document.createElement('div');
-        hebrewCard.className = 'word-card';
-        hebrewCard.dataset.word = word.english;
-        hebrewCard.textContent = word.hebrew;
-        hebrewContainer.appendChild(hebrewCard);
+        // Left card
+        const leftCard = document.createElement('div');
+        leftCard.className = 'word-card';
+        leftCard.dataset.word = word.english;
+        leftCard.textContent = engToHeb ? word.english : word.hebrew;
+        leftContainer.appendChild(leftCard);
+        // Right card
+        const rightCard = document.createElement('div');
+        rightCard.className = 'word-card';
+        rightCard.dataset.word = word.english;
+        rightCard.textContent = engToHeb ? word.hebrew : word.english;
+        rightContainer.appendChild(rightCard);
     });
-
-    // Shuffle Hebrew words
-    const hebrewCards = Array.from(hebrewContainer.children);
-    hebrewCards.sort(() => Math.random() - 0.5);
-    hebrewContainer.innerHTML = '';
-    hebrewCards.forEach(card => hebrewContainer.appendChild(card));
+    // Shuffle right column
+    const rightCards = Array.from(rightContainer.children);
+    rightCards.sort(() => Math.random() - 0.5);
+    rightContainer.innerHTML = '';
+    rightCards.forEach(card => rightContainer.appendChild(card));
 
     // Game logic
-    function handleCardClick(card, isEnglish) {
+    function handleCardClick(card, isLeft) {
         if (!gameStarted || card.classList.contains('matched')) return;
-
-        if (isEnglish) {
-            if (selectedEnglish) {
-                selectedEnglish.classList.remove('selected');
-            }
-            selectedEnglish = card;
+        if (isLeft) {
+            if (selectedLeft) selectedLeft.classList.remove('selected');
+            selectedLeft = card;
             card.classList.add('selected');
         } else {
-            if (selectedHebrew) {
-                selectedHebrew.classList.remove('selected');
-            }
-            selectedHebrew = card;
+            if (selectedRight) selectedRight.classList.remove('selected');
+            selectedRight = card;
             card.classList.add('selected');
         }
-
-        if (selectedEnglish && selectedHebrew) {
-            if (selectedEnglish.dataset.word === selectedHebrew.dataset.word) {
+        if (selectedLeft && selectedRight) {
+            if (selectedLeft.dataset.word === selectedRight.dataset.word) {
                 // Match found
-                selectedEnglish.classList.remove('selected');
-                selectedHebrew.classList.remove('selected');
-                selectedEnglish.classList.add('matched');
-                selectedHebrew.classList.add('matched');
+                selectedLeft.classList.remove('selected');
+                selectedRight.classList.remove('selected');
+                selectedLeft.classList.add('matched');
+                selectedRight.classList.add('matched');
                 score += 10;
                 document.getElementById('score').textContent = score;
-
                 // Check if game is complete
                 if (document.querySelectorAll('.matched').length === gameWords.length * 2) {
                     endGame(true);
                 }
             } else {
-                // No match
                 setTimeout(() => {
-                    selectedEnglish.classList.remove('selected');
-                    selectedHebrew.classList.remove('selected');
+                    selectedLeft.classList.remove('selected');
+                    selectedRight.classList.remove('selected');
                 }, 500);
             }
-            selectedEnglish = null;
-            selectedHebrew = null;
+            selectedLeft = null;
+            selectedRight = null;
         }
     }
-
     // Add click handlers
-    document.querySelectorAll('.english-words .word-card').forEach(card => {
+    document.querySelectorAll('.left-words .word-card').forEach(card => {
         card.addEventListener('click', () => handleCardClick(card, true));
     });
-
-    document.querySelectorAll('.hebrew-words .word-card').forEach(card => {
+    document.querySelectorAll('.right-words .word-card').forEach(card => {
         card.addEventListener('click', () => handleCardClick(card, false));
     });
 
@@ -673,6 +683,7 @@ function startQuizGame() {
             </div>
         </div>
     `;
+    insertBackHomeBtn(gameContainer);
     insertChildInfoBar(gameContainer);
     makeGameTitleHomeClickable();
 
@@ -985,4 +996,102 @@ function showCelebration({ title, score, childName, childImg, onClose }) {
         if (onClose) onClose();
         window.location.href = 'index.html';
     };
+}
+
+// Image Recognition Practice Game
+function startImagePracticeGame() {
+    const gameContainer = document.querySelector('.game-container');
+    gameContainer.innerHTML = `
+        <div class="image-practice-game">
+            <h2>תרגול זיהוי תמונה</h2>
+            <div class="image-practice-content">
+                <div class="practice-image-container">
+                    <span id="practiceEmoji" class="practice-emoji"></span>
+                </div>
+                <div class="practice-options"></div>
+            </div>
+            <div class="practice-controls">
+                <button id="nextPractice">הבא</button>
+            </div>
+        </div>
+    `;
+    insertBackHomeBtn(gameContainer);
+    insertChildInfoBar(gameContainer);
+    makeGameTitleHomeClickable();
+    // Add styles
+    const style = document.createElement('style');
+    style.textContent = `
+        .image-practice-game { padding: 20px; }
+        .image-practice-content { display: flex; flex-direction: column; align-items: center; }
+        .practice-image-container { margin-bottom: 25px; }
+        .practice-emoji { font-size: 7em; display: block; margin: 0 auto; }
+        .practice-options { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+        .practice-option-btn { padding: 12px 28px; font-size: 1.1em; border: 2px solid var(--primary-color); border-radius: 8px; background: white; color: var(--primary-color); cursor: pointer; transition: background 0.2s, color 0.2s; margin: 5px; }
+        .practice-option-btn:hover { background: var(--primary-color); color: white; }
+        .practice-option-btn.correct { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+        .practice-option-btn.wrong { background: #ff4444; color: white; border-color: #ff4444; }
+        .practice-controls { text-align: center; }
+        #nextPractice { padding: 10px 24px; background: var(--accent-color); color: white; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer; }
+        #nextPractice:disabled { background: #ccc; color: #888; cursor: not-allowed; }
+    `;
+    document.head.appendChild(style);
+    // Game logic
+    let currentIndex = 0;
+    let correctCount = 0;
+    let rounds = 6;
+    let usedIndexes = [];
+    function nextRound() {
+        if (usedIndexes.length >= rounds) {
+            // Show celebration
+            const { imgFile, name } = getChildImageAndName();
+            showCelebration({
+                title: 'כל הכבוד! סיימת תרגול!',
+                score: correctCount + ' / ' + rounds,
+                childName: name,
+                childImg: imgFile,
+                onClose: () => startImagePracticeGame()
+            });
+            return;
+        }
+        // Pick a random word not used yet
+        let idx;
+        do { idx = Math.floor(Math.random() * words.length); } while (usedIndexes.includes(idx));
+        usedIndexes.push(idx);
+        const word = words[idx];
+        // Set emoji
+        document.getElementById('practiceEmoji').textContent = word.emoji;
+        // Prepare options (1 correct + 3 random wrong)
+        const options = [word.english];
+        const wrongs = words.filter(w => w.english !== word.english).sort(() => Math.random() - 0.5).slice(0, 3);
+        wrongs.forEach(w => options.push(w.english));
+        options.sort(() => Math.random() - 0.5);
+        // Render options
+        const optionsDiv = document.querySelector('.practice-options');
+        optionsDiv.innerHTML = '';
+        options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'practice-option-btn';
+            btn.textContent = opt;
+            btn.onclick = () => {
+                if (btn.disabled) return;
+                if (opt === word.english) {
+                    btn.classList.add('correct');
+                    correctCount++;
+                } else {
+                    btn.classList.add('wrong');
+                    // Highlight correct
+                    optionsDiv.querySelectorAll('button').forEach(b => {
+                        if (b.textContent === word.english) b.classList.add('correct');
+                    });
+                }
+                // Disable all
+                optionsDiv.querySelectorAll('button').forEach(b => b.disabled = true);
+                document.getElementById('nextPractice').disabled = false;
+            };
+            optionsDiv.appendChild(btn);
+        });
+        document.getElementById('nextPractice').disabled = true;
+    }
+    document.getElementById('nextPractice').onclick = nextRound;
+    nextRound();
 } 
