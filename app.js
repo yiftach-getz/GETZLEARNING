@@ -98,7 +98,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const imagePracticeBtn = document.getElementById('imagePracticeBtn');
     if (imagePracticeBtn) {
-        imagePracticeBtn.addEventListener('click', startImagePracticeGame);
+        imagePracticeBtn.addEventListener('click', () => {
+            // פופאפ בחירת רמה
+            const oldPopup = document.getElementById('levelSelectPopup');
+            if (oldPopup) oldPopup.remove();
+            const popup = document.createElement('div');
+            popup.id = 'levelSelectPopup';
+            popup.className = 'game-instructions';
+            popup.innerHTML = `
+                <div class="instructions-content">
+                    <h3>בחר רמה</h3>
+                    <div style="display:flex; gap:20px; justify-content:center; margin:20px 0;">
+                        <button id="levelAButton" class="close-instructions">רמה A (רגילה)</button>
+                        <button id="levelBButton" class="close-instructions">רמה B (מתקדמת)</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(popup);
+            document.getElementById('levelAButton').onclick = () => {
+                popup.remove();
+                startImagePracticeGame();
+            };
+            document.getElementById('levelBButton').onclick = () => {
+                popup.remove();
+                startImagePracticeGameLevelB();
+            };
+        });
     }
     // כפתור שלב ב
     const memoryLevelBBtn = document.getElementById('memoryLevelBBtn');
@@ -497,12 +522,14 @@ function startMemoryGame() {
                     ((card1.dataset.type === 'english' && card1.dataset.pair === card2.dataset.value) ||
                      (card1.dataset.type === 'hebrew' && card1.dataset.pair === card2.dataset.value));
                 if (isMatch) {
+                    card1.classList.add('memory-match');
+                    card2.classList.add('memory-match');
                     pairs++;
                     document.getElementById('pairs').textContent = pairs;
                     flippedCards = [];
                     canFlip = true;
 
-                    if (pairs === 6) {
+                    if (pairs === (cards.length / 2)) {
                         setTimeout(() => {
                             saveGameScore('memory', attempts);
                             const { imgFile, name } = getChildImageAndName();
@@ -516,9 +543,11 @@ function startMemoryGame() {
                         }, 500);
                     }
                 } else {
+                    card1.classList.add('memory-mismatch');
+                    card2.classList.add('memory-mismatch');
                     setTimeout(() => {
-                        card1.classList.remove('flipped');
-                        card2.classList.remove('flipped');
+                        card1.classList.remove('flipped', 'memory-mismatch');
+                        card2.classList.remove('flipped', 'memory-mismatch');
                         flippedCards = [];
                         canFlip = true;
                     }, 1000);
@@ -688,12 +717,16 @@ function startMemoryGameLevelB() {
                     ((card1.dataset.type === 'english' && card1.dataset.pair === card2.dataset.value) ||
                      (card1.dataset.type === 'hebrew' && card1.dataset.pair === card2.dataset.value));
                 if (isMatch) {
+                    card1.classList.remove('selected');
+                    card2.classList.remove('selected');
+                    card1.classList.add('matched', 'word-match');
+                    card2.classList.add('matched', 'word-match');
                     pairs++;
                     document.getElementById('pairs').textContent = pairs;
                     flippedCards = [];
                     canFlip = true;
 
-                    if (pairs === 8) {
+                    if (pairs === (cards.length / 2)) {
                         setTimeout(() => {
                             saveGameScore('memoryB', attempts);
                             const { imgFile, name } = getChildImageAndName();
@@ -707,9 +740,11 @@ function startMemoryGameLevelB() {
                         }, 500);
                     }
                 } else {
+                    card1.classList.add('memory-mismatch');
+                    card2.classList.add('memory-mismatch');
                     setTimeout(() => {
-                        card1.classList.remove('flipped');
-                        card2.classList.remove('flipped');
+                        card1.classList.remove('flipped', 'memory-mismatch');
+                        card2.classList.remove('flipped', 'memory-mismatch');
                         flippedCards = [];
                         canFlip = true;
                     }, 1000);
@@ -875,8 +910,8 @@ function startMatchingGameLevelB() {
                 // Match found
                 selectedLeft.classList.remove('selected');
                 selectedRight.classList.remove('selected');
-                selectedLeft.classList.add('matched');
-                selectedRight.classList.add('matched');
+                selectedLeft.classList.add('matched', 'word-match');
+                selectedRight.classList.add('matched', 'word-match');
                 score += 10;
                 document.getElementById('score').textContent = score;
                 // Check if game is complete
@@ -1199,9 +1234,34 @@ function setupVocabBtn() {
     const vocabBtn = document.getElementById('vocabBtn');
     if (vocabBtn) {
         vocabBtn.addEventListener('click', () => {
-            // Save user to localStorage for use in vocabulary page
-            if (currentUser) localStorage.setItem('currentUser', currentUser);
-            window.location.href = 'vocabulary.html';
+            // פופאפ בחירת רמה
+            const oldPopup = document.getElementById('levelSelectPopup');
+            if (oldPopup) oldPopup.remove();
+            const popup = document.createElement('div');
+            popup.id = 'levelSelectPopup';
+            popup.className = 'game-instructions';
+            popup.innerHTML = `
+                <div class="instructions-content">
+                    <h3>בחר רמה</h3>
+                    <div style="display:flex; gap:20px; justify-content:center; margin:20px 0;">
+                        <button id="levelAButton" class="close-instructions">רמה A (רגילה)</button>
+                        <button id="levelBButton" class="close-instructions">רמה B (מתקדמת)</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(popup);
+            document.getElementById('levelAButton').onclick = () => {
+                localStorage.setItem('vocabLevel', 'A');
+                popup.remove();
+                if (currentUser) localStorage.setItem('currentUser', currentUser);
+                window.location.href = 'vocabulary.html';
+            };
+            document.getElementById('levelBButton').onclick = () => {
+                localStorage.setItem('vocabLevel', 'B');
+                popup.remove();
+                if (currentUser) localStorage.setItem('currentUser', currentUser);
+                window.location.href = 'vocabulary.html';
+            };
         });
     }
 }

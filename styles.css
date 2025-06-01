@@ -370,4 +370,39 @@ h1 {
 }
 .celebration-home-btn:hover {
     background: #f57c00;
+}
+
+.kids-avatars {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+.kid-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    object-fit: cover;
+    border: 3px solid #fff;
+}
+
+.memory-card.memory-match .memory-card-back {
+    background: #4CAF50 !important;
+    color: #fff;
+    border-color: #388e3c;
+    transition: background 0.3s, color 0.3s;
+}
+.memory-card.memory-mismatch .memory-card-back {
+    background: #ff4444 !important;
+    color: #fff;
+    border-color: #b71c1c;
+    transition: background 0.3s, color 0.3s;
+}
+
+.word-card.word-match {
+    background: #4CAF50 !important;
+    color: #fff !important;
+    border-color: #388e3c !important;
+    transition: background 0.3s, color 0.3s;
 } 
