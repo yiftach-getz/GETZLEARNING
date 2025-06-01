@@ -17,6 +17,49 @@ const words = [
     { english: 'weekend', hebrew: 'סוף שבוע', emoji: '🎉' }
 ];
 
+// אוצר מילים שלב ב (מתקדם)
+const wordsLevelB = [
+    { english: 'as', hebrew: 'כמו, כאשר', emoji: '🟰' },
+    { english: 'at', hebrew: 'ב-, אצל', emoji: '📍' },
+    { english: 'CamScanner', hebrew: 'אפליקציית סריקה', emoji: '📲' },
+    { english: 'castle', hebrew: 'טירה', emoji: '🏰' },
+    { english: 'celebration', hebrew: 'חגיגה', emoji: '🥳' },
+    { english: 'clean', hebrew: 'לנקות, נקי', emoji: '🧼' },
+    { english: 'cupboard', hebrew: 'ארון מטבח', emoji: '🚪' },
+    { english: 'each', hebrew: 'כל (אחד)', emoji: '👤' },
+    { english: 'END', hebrew: 'סוף', emoji: '🔚' },
+    { english: 'everyone', hebrew: 'כולם', emoji: '👥' },
+    { english: 'fall', hebrew: 'ליפול', emoji: '🍂' },
+    { english: 'flag', hebrew: 'דגל', emoji: '🚩' },
+    { english: 'forest', hebrew: 'יער', emoji: '🌳' },
+    { english: 'get', hebrew: 'לקבל, להשיג', emoji: '🎁' },
+    { english: 'glass', hebrew: 'כוס, זכוכית', emoji: '🥛' },
+    { english: 'guess', hebrew: 'לנחש', emoji: '❓' },
+    { english: 'ie', hebrew: 'כלומר', emoji: 'ℹ️' },
+    { english: 'kindof', hebrew: 'סוג של', emoji: '🌀' },
+    { english: 'look', hebrew: 'להסתכל', emoji: '👀' },
+    { english: 'lunch', hebrew: 'ארוחת צהריים', emoji: '🍽️' },
+    { english: 'many', hebrew: 'הרבה', emoji: '🔢' },
+    { english: 'mat', hebrew: 'שטיחון, מחצלת', emoji: '🧺' },
+    { english: 'mirror', hebrew: 'מראה', emoji: '🪞' },
+    { english: 'outside', hebrew: 'בחוץ', emoji: '🌳' },
+    { english: 'refrigerator', hebrew: 'מקרר', emoji: '🧊' },
+    { english: 'rice', hebrew: 'אורז', emoji: '🍚' },
+    { english: 'rich', hebrew: 'עשיר', emoji: '💰' },
+    { english: 'roof', hebrew: 'גג', emoji: '🏠' },
+    { english: 'sink', hebrew: 'כיור', emoji: '🚰' },
+    { english: 'stove', hebrew: 'כיריים', emoji: '🍳' },
+    { english: 'straw', hebrew: 'קשית', emoji: '🥤' },
+    { english: 'supper', hebrew: 'ארוחת ערב', emoji: '🍲' },
+    { english: 'thing', hebrew: 'דבר, חפץ', emoji: '📦' },
+    { english: 'think', hebrew: 'לחשוב', emoji: '🤔' },
+    { english: 'throw', hebrew: 'לזרוק', emoji: '🏈' },
+    { english: 'toilet', hebrew: 'שירותים', emoji: '🚽' },
+    { english: 'us', hebrew: 'אותנו', emoji: '🧑‍🤝‍🧑' },
+    { english: 'visit', hebrew: 'לבקר', emoji: '🧳' },
+    { english: 'weekend', hebrew: 'סוף שבוע', emoji: '🎉' }
+];
+
 // Current user
 let currentUser = null;
 
@@ -56,6 +99,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const imagePracticeBtn = document.getElementById('imagePracticeBtn');
     if (imagePracticeBtn) {
         imagePracticeBtn.addEventListener('click', startImagePracticeGame);
+    }
+    // כפתור שלב ב
+    const memoryLevelBBtn = document.getElementById('memoryLevelBBtn');
+    if (memoryLevelBBtn) {
+        memoryLevelBBtn.addEventListener('click', startMemoryGameLevelB);
     }
 });
 
@@ -130,32 +178,66 @@ function showInstructions(gameType) {
     document.getElementById('gameInstructions').style.display = 'flex';
 }
 
-// Update game start functions to show instructions
+// פופאפ בחירת רמה (A/B)
+function showLevelSelectPopup(gameType) {
+    // הסר פופאפ קודם אם קיים
+    const oldPopup = document.getElementById('levelSelectPopup');
+    if (oldPopup) oldPopup.remove();
+    // צור פופאפ
+    const popup = document.createElement('div');
+    popup.id = 'levelSelectPopup';
+    popup.className = 'game-instructions';
+    popup.innerHTML = `
+        <div class="instructions-content">
+            <h3>בחר רמה</h3>
+            <div style="display:flex; gap:20px; justify-content:center; margin:20px 0;">
+                <button id="levelAButton" class="close-instructions">רמה A (רגילה)</button>
+                <button id="levelBButton" class="close-instructions">רמה B (מתקדמת)</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(popup);
+    // מאזינים
+    document.getElementById('levelAButton').onclick = () => {
+        popup.remove();
+        startGameWithLevel(gameType, 'A');
+    };
+    document.getElementById('levelBButton').onclick = () => {
+        popup.remove();
+        startGameWithLevel(gameType, 'B');
+    };
+}
+
+// הפעלת משחק עם רמה
+function startGameWithLevel(gameType, level) {
+    switch (gameType) {
+        case 'memory':
+            if (level === 'A') startMemoryGame();
+            else startMemoryGameLevelB();
+            break;
+        case 'matching':
+            if (level === 'A') startMatchingGame();
+            else startMatchingGameLevelB();
+            break;
+        case 'quiz':
+            if (level === 'A') startQuizGame();
+            else startQuizGameLevelB();
+            break;
+        case 'imagePractice':
+            if (level === 'A') startImagePracticeGame();
+            else startImagePracticeGameLevelB();
+            break;
+    }
+}
+
+// עדכון startGame לקרוא לפופאפ רמות
 function startGame(gameType) {
     if (!currentUser) {
         alert('אנא בחר ילד תחילה');
         return;
     }
     showChildInfo();
-    // Show instructions first
-    showInstructions(gameType);
-    // Add event listener to start button in instructions
-    document.querySelector('.close-instructions').addEventListener('click', () => {
-        document.getElementById('gameInstructions').style.display = 'none';
-        // Start the selected game after closing instructions
-        showChildInfo();
-        switch (gameType) {
-            case 'memory':
-                startMemoryGame();
-                break;
-            case 'matching':
-                startMatchingGame();
-                break;
-            case 'quiz':
-                startQuizGame();
-                break;
-        }
-    });
+    showLevelSelectPopup(gameType);
 }
 
 // Update loadUserProgress to show loading
@@ -274,24 +356,40 @@ function startMemoryGame() {
     insertChildInfoBar(gameContainer);
     makeGameTitleHomeClickable();
 
-    // Create memory cards
+    // Create memory cards - זוגות עברית/אנגלית
     const memoryCards = document.querySelector('.memory-cards');
     const selectedWords = [...words].sort(() => Math.random() - 0.5).slice(0, 6);
-    const memoryWords = [...selectedWords, ...selectedWords]
-        .sort(() => Math.random() - 0.5);
+    // ניצור מערך של כרטיסים: חצי באנגלית, חצי בעברית
+    let cardsArr = [];
+    selectedWords.forEach(word => {
+        cardsArr.push({
+            type: 'english',
+            value: word.english,
+            pair: word.hebrew,
+            emoji: word.emoji
+        });
+        cardsArr.push({
+            type: 'hebrew',
+            value: word.hebrew,
+            pair: word.english,
+            emoji: word.emoji
+        });
+    });
+    cardsArr = cardsArr.sort(() => Math.random() - 0.5);
 
-    memoryWords.forEach((word, index) => {
+    cardsArr.forEach((cardObj, index) => {
         const card = document.createElement('div');
         card.className = 'memory-card';
         card.dataset.index = index;
-        card.dataset.word = word.english;
+        card.dataset.type = cardObj.type;
+        card.dataset.value = cardObj.value;
+        card.dataset.pair = cardObj.pair;
         card.innerHTML = `
             <div class="memory-card-inner">
                 <div class="memory-card-front">?</div>
                 <div class="memory-card-back">
-                    <span class="word-emoji">${word.emoji}</span>
-                    <div class="memory-word">${word.english}</div>
-                    <div class="memory-translation">${word.hebrew}</div>
+                    <span class="word-emoji">${cardObj.emoji}</span>
+                    <div class="memory-word">${cardObj.value}</div>
                 </div>
             </div>
         `;
@@ -370,9 +468,6 @@ function startMemoryGame() {
             font-weight: bold;
             color: var(--secondary-color);
         }
-        .memory-translation {
-            color: var(--text-color);
-        }
     `;
     document.head.appendChild(style);
 
@@ -396,7 +491,12 @@ function startMemoryGame() {
                 canFlip = false;
 
                 const [card1, card2] = flippedCards;
-                if (card1.dataset.word === card2.dataset.word) {
+                // התאמה: כרטיס אחד בעברית, אחד באנגלית, והם זוג
+                const isMatch =
+                    card1.dataset.type !== card2.dataset.type &&
+                    ((card1.dataset.type === 'english' && card1.dataset.pair === card2.dataset.value) ||
+                     (card1.dataset.type === 'hebrew' && card1.dataset.pair === card2.dataset.value));
+                if (isMatch) {
                     pairs++;
                     document.getElementById('pairs').textContent = pairs;
                     flippedCards = [];
@@ -428,8 +528,199 @@ function startMemoryGame() {
     });
 }
 
-// Matching Game Implementation
-function startMatchingGame() {
+// משחק זיכרון שלב ב (מתקדם)
+function startMemoryGameLevelB() {
+    // כמו startMemoryGame, רק עם wordsLevelB
+    const gameContainer = document.querySelector('.game-container');
+    gameContainer.innerHTML = `
+        <div class="memory-game">
+            <div class="memory-header">
+                <h2>משחק הזיכרון - רמה ב׳</h2>
+                <div class="memory-stats">
+                    <span>ניסיונות: <span id="attempts">0</span></span>
+                    <span>זוגות שנמצאו: <span id="pairs">0</span></span>
+                </div>
+            </div>
+            <div class="memory-cards"></div>
+        </div>
+    `;
+    insertBackHomeBtn(gameContainer);
+    insertChildInfoBar(gameContainer);
+    makeGameTitleHomeClickable();
+
+    // יצירת כרטיסים
+    const memoryCards = document.querySelector('.memory-cards');
+    const selectedWords = [...wordsLevelB].sort(() => Math.random() - 0.5).slice(0, 8); // יותר זוגות
+    let cardsArr = [];
+    selectedWords.forEach(word => {
+        cardsArr.push({
+            type: 'english',
+            value: word.english,
+            pair: word.hebrew,
+            emoji: word.emoji
+        });
+        cardsArr.push({
+            type: 'hebrew',
+            value: word.hebrew,
+            pair: word.english,
+            emoji: word.emoji
+        });
+    });
+    cardsArr = cardsArr.sort(() => Math.random() - 0.5);
+
+    cardsArr.forEach((cardObj, index) => {
+        const card = document.createElement('div');
+        card.className = 'memory-card';
+        card.dataset.index = index;
+        card.dataset.type = cardObj.type;
+        card.dataset.value = cardObj.value;
+        card.dataset.pair = cardObj.pair;
+        card.innerHTML = `
+            <div class="memory-card-inner">
+                <div class="memory-card-front">?</div>
+                <div class="memory-card-back">
+                    <span class="word-emoji">${cardObj.emoji}</span>
+                    <div class="memory-word">${cardObj.value}</div>
+                </div>
+            </div>
+        `;
+        memoryCards.appendChild(card);
+    });
+
+    // Add memory game styles (כמו קודם)
+    const style = document.createElement('style');
+    style.textContent = `
+        .memory-game {
+            padding: 20px;
+        }
+        .memory-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .memory-stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        .memory-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .memory-card {
+            aspect-ratio: 1;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        .memory-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .memory-card.flipped .memory-card-inner {
+            transform: rotateY(180deg);
+        }
+        .memory-card-front,
+        .memory-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+        .memory-card-front {
+            background: var(--secondary-color);
+            color: white;
+            font-size: 2em;
+        }
+        .memory-card-back {
+            background: white;
+            transform: rotateY(180deg);
+            border: 2px solid var(--secondary-color);
+        }
+        .memory-card-back img {
+            width: 80%;
+            height: auto;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+        .memory-word {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Memory game logic
+    let flippedCards = [];
+    let attempts = 0;
+    let pairs = 0;
+    let canFlip = true;
+
+    const cards = document.querySelectorAll('.memory-card');
+    cards.forEach(card => {
+        card.addEventListener('click', () => {
+            if (!canFlip || card.classList.contains('flipped') || flippedCards.length >= 2) return;
+
+            card.classList.add('flipped');
+            flippedCards.push(card);
+
+            if (flippedCards.length === 2) {
+                attempts++;
+                document.getElementById('attempts').textContent = attempts;
+                canFlip = false;
+
+                const [card1, card2] = flippedCards;
+                // התאמה: כרטיס אחד בעברית, אחד באנגלית, והם זוג
+                const isMatch =
+                    card1.dataset.type !== card2.dataset.type &&
+                    ((card1.dataset.type === 'english' && card1.dataset.pair === card2.dataset.value) ||
+                     (card1.dataset.type === 'hebrew' && card1.dataset.pair === card2.dataset.value));
+                if (isMatch) {
+                    pairs++;
+                    document.getElementById('pairs').textContent = pairs;
+                    flippedCards = [];
+                    canFlip = true;
+
+                    if (pairs === 8) {
+                        setTimeout(() => {
+                            saveGameScore('memoryB', attempts);
+                            const { imgFile, name } = getChildImageAndName();
+                            showCelebration({
+                                title: 'כל הכבוד! ניצחת רמה ב׳!',
+                                score: attempts,
+                                childName: name,
+                                childImg: imgFile,
+                                onClose: () => startMemoryGameLevelB()
+                            });
+                        }, 500);
+                    }
+                } else {
+                    setTimeout(() => {
+                        card1.classList.remove('flipped');
+                        card2.classList.remove('flipped');
+                        flippedCards = [];
+                        canFlip = true;
+                    }, 1000);
+                }
+            }
+        });
+    });
+}
+
+// משחק התאמת מילים רמה ב
+function startMatchingGameLevelB() {
     // Clear the game container
     const gameContainer = document.querySelector('.game-container');
     // Randomly decide direction: true = English to Hebrew, false = Hebrew to English
@@ -439,7 +730,7 @@ function startMatchingGame() {
     gameContainer.innerHTML = `
         <div class="matching-game">
             <div class="matching-header">
-                <h2>משחק ההתאמה</h2>
+                <h2>משחק ההתאמה - רמה ב׳</h2>
                 <div class="matching-stats">
                     <span>זמן: <span id="timer">60</span> שניות</span>
                     <span>ניקוד: <span id="score">0</span></span>
@@ -463,7 +754,7 @@ function startMatchingGame() {
     insertChildInfoBar(gameContainer);
     makeGameTitleHomeClickable();
 
-    // Add matching game styles
+    // Add matching game styles (כמו קודם)
     const style = document.createElement('style');
     style.textContent = `
         .matching-game {
@@ -543,7 +834,7 @@ function startMatchingGame() {
     let gameStarted = false;
 
     // Get random words for the game
-    const gameWords = [...words].sort(() => Math.random() - 0.5).slice(0, 6);
+    const gameWords = [...wordsLevelB].sort(() => Math.random() - 0.5).slice(0, 8);
     // Create word cards
     const leftContainer = document.querySelector('.left-words');
     const rightContainer = document.querySelector('.right-words');
@@ -631,7 +922,7 @@ function startMatchingGame() {
 
     // Reset game
     document.getElementById('resetGame').addEventListener('click', () => {
-        startMatchingGame();
+        startMatchingGameLevelB();
     });
 
     // End game
@@ -645,27 +936,27 @@ function startMatchingGame() {
         }
 
         setTimeout(() => {
-            saveGameScore('matching', score);
+            saveGameScore('matchingB', score);
             const { imgFile, name } = getChildImageAndName();
             showCelebration({
-                title: isWin ? 'כל הכבוד! ניצחת!' : 'הזמן נגמר!',
+                title: isWin ? 'כל הכבוד! ניצחת רמה ב׳!' : 'הזמן נגמר!',
                 score: score,
                 childName: name,
                 childImg: imgFile,
-                onClose: () => startMatchingGame()
+                onClose: () => startMatchingGameLevelB()
             });
         }, 500);
     }
 }
 
-// Quiz Game Implementation
-function startQuizGame() {
+// חידון רמה ב
+function startQuizGameLevelB() {
     // Clear the game container
     const gameContainer = document.querySelector('.game-container');
     gameContainer.innerHTML = `
         <div class="quiz-game">
             <div class="quiz-header">
-                <h2>חידון אנגלית</h2>
+                <h2>חידון אנגלית - רמה ב׳</h2>
                 <div class="quiz-stats">
                     <span>שאלה: <span id="currentQuestion">1</span>/<span id="totalQuestions">10</span></span>
                     <span>ניקוד: <span id="quizScore">0</span></span>
@@ -687,7 +978,7 @@ function startQuizGame() {
     insertChildInfoBar(gameContainer);
     makeGameTitleHomeClickable();
 
-    // Add quiz game styles
+    // Add quiz game styles (כמו קודם)
     const style = document.createElement('style');
     style.textContent = `
         .quiz-game {
@@ -780,10 +1071,10 @@ function startQuizGame() {
 
     // Generate questions
     function generateQuestions() {
-        const shuffledWords = [...words].sort(() => Math.random() - 0.5);
+        const shuffledWords = [...wordsLevelB].sort(() => Math.random() - 0.5);
         questions = shuffledWords.slice(0, 10).map(word => {
             // Get 3 random wrong answers
-            const wrongAnswers = words
+            const wrongAnswers = wordsLevelB
                 .filter(w => w.english !== word.english)
                 .sort(() => Math.random() - 0.5)
                 .slice(0, 3)
@@ -871,14 +1162,14 @@ function startQuizGame() {
         } else {
             // End of quiz
             setTimeout(() => {
-                saveGameScore('quiz', score);
+                saveGameScore('quizB', score);
                 const { imgFile, name } = getChildImageAndName();
                 showCelebration({
-                    title: 'החידון הסתיים!',
+                    title: 'החידון הסתיים! רמה ב׳',
                     score: score,
                     childName: name,
                     childImg: imgFile,
-                    onClose: () => startQuizGame()
+                    onClose: () => startQuizGameLevelB()
                 });
             }, 500);
         }
@@ -998,12 +1289,12 @@ function showCelebration({ title, score, childName, childImg, onClose }) {
     };
 }
 
-// Image Recognition Practice Game
-function startImagePracticeGame() {
+// תרגול זיהוי תמונה רמה ב
+function startImagePracticeGameLevelB() {
     const gameContainer = document.querySelector('.game-container');
     gameContainer.innerHTML = `
         <div class="image-practice-game">
-            <h2>תרגול זיהוי תמונה</h2>
+            <h2>תרגול זיהוי תמונה - רמה ב׳</h2>
             <div class="image-practice-content">
                 <div class="practice-image-container">
                     <span id="practiceEmoji" class="practice-emoji"></span>
@@ -1038,31 +1329,31 @@ function startImagePracticeGame() {
     // Game logic
     let currentIndex = 0;
     let correctCount = 0;
-    let rounds = 6;
+    let rounds = 8;
     let usedIndexes = [];
     function nextRound() {
         if (usedIndexes.length >= rounds) {
             // Show celebration
             const { imgFile, name } = getChildImageAndName();
             showCelebration({
-                title: 'כל הכבוד! סיימת תרגול!',
+                title: 'כל הכבוד! סיימת תרגול רמה ב׳!',
                 score: correctCount + ' / ' + rounds,
                 childName: name,
                 childImg: imgFile,
-                onClose: () => startImagePracticeGame()
+                onClose: () => startImagePracticeGameLevelB()
             });
             return;
         }
         // Pick a random word not used yet
         let idx;
-        do { idx = Math.floor(Math.random() * words.length); } while (usedIndexes.includes(idx));
+        do { idx = Math.floor(Math.random() * wordsLevelB.length); } while (usedIndexes.includes(idx));
         usedIndexes.push(idx);
-        const word = words[idx];
+        const word = wordsLevelB[idx];
         // Set emoji
         document.getElementById('practiceEmoji').textContent = word.emoji;
         // Prepare options (1 correct + 3 random wrong)
         const options = [word.english];
-        const wrongs = words.filter(w => w.english !== word.english).sort(() => Math.random() - 0.5).slice(0, 3);
+        const wrongs = wordsLevelB.filter(w => w.english !== word.english).sort(() => Math.random() - 0.5).slice(0, 3);
         wrongs.forEach(w => options.push(w.english));
         options.sort(() => Math.random() - 0.5);
         // Render options
